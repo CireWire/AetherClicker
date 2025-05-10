@@ -20,11 +20,10 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <TextBlock>
-            <Run Text="Welcome "/>
-            <Run Text="{Binding CompanyName, TargetNullValue='AetherClicker'}"/>
-            <Run Text="!"/>
-        </TextBlock>
+        <TextBlock Text="Welcome to AetherClicker!" 
+                   FontSize="24" FontWeight="Bold" 
+                   HorizontalAlignment="Center" 
+                   Margin="0,0,0,20"/>
 
         <!-- Customization Content -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
