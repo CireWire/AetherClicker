@@ -4,14 +4,16 @@ using System.Windows.Input;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Net.Http;
+using System.ComponentModel;
+using AetherClicker.Commands;
 
 namespace AetherClicker.Views
 {
     public partial class UpdateWindow : Window
     {
-        public string Version { get; set; }
-        public string ReleaseNotes { get; set; }
-        public string DownloadUrl { get; set; }
+        public string Version { get; set; } = string.Empty;
+        public string ReleaseNotes { get; set; } = string.Empty;
+        public string DownloadUrl { get; set; } = string.Empty;
 
         public ICommand UpdateCommand { get; }
         public ICommand CloseCommand { get; }
@@ -24,8 +26,8 @@ namespace AetherClicker.Views
             DownloadUrl = downloadUrl;
             DataContext = this;
 
-            UpdateCommand = new RelayCommand(async () => await UpdateNow());
-            CloseCommand = new RelayCommand(() => Close());
+            UpdateCommand = new RelayCommand(async _ => await UpdateNow());
+            CloseCommand = new RelayCommand(_ => Close());
         }
 
         private async Task UpdateNow()
@@ -44,27 +46,5 @@ namespace AetherClicker.Views
                 MessageBox.Show($"Error starting update: {ex.Message}", "Update Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-    }
-
-    public class RelayCommand : ICommand
-    {
-        private readonly Action _execute;
-        private readonly Func<bool> _canExecute;
-
-        public RelayCommand(Action execute, Func<bool> canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
-
-        public event EventHandler CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
-
-        public bool CanExecute(object parameter) => _canExecute?.Invoke() ?? true;
-
-        public void Execute(object parameter) => _execute();
     }
 } 

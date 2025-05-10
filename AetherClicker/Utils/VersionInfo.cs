@@ -9,45 +9,42 @@ namespace AetherClicker.Utils
 {
     public class VersionInfo
     {
-        public string Version { get; set; } = "1.0.0";
-        public string DownloadUrl { get; set; } = "";
-        public string ReleaseNotes { get; set; } = "";
+        private const string VERSION_CHECK_URL = "https://api.github.com/repos/CireWire/AetherClicker/releases/latest";
+        private static readonly HttpClient _httpClient = new HttpClient();
+
+        public string Version { get; set; } = string.Empty;
+        public string ReleaseNotes { get; set; } = string.Empty;
+        public string DownloadUrl { get; set; } = string.Empty;
         public DateTime ReleaseDate { get; set; }
 
-        private const string VERSION_CHECK_URL = "https://api.github.com/repos/CireWire/AetherClicker/releases/latest";
+        public static string CurrentVersion => Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "1.0.0.0";
 
-        public static string CurrentVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
-
-        public static async Task<VersionInfo> CheckForUpdates()
+        public static async Task<VersionInfo?> CheckForUpdates()
         {
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.DefaultRequestHeaders.Add("User-Agent", "AetherClicker");
-                    var response = await client.GetStringAsync(VERSION_CHECK_URL);
-                    var releaseInfo = JsonSerializer.Deserialize<VersionInfo>(response);
+                _httpClient.DefaultRequestHeaders.Add("User-Agent", "AetherClicker");
+                var response = await _httpClient.GetStringAsync(VERSION_CHECK_URL);
+                var releaseInfo = JsonSerializer.Deserialize<VersionInfo>(response);
 
-                    if (IsNewVersionAvailable(CurrentVersion, releaseInfo.Version))
-                    {
-                        return releaseInfo;
-                    }
+                if (releaseInfo != null && IsNewVersionAvailable(CurrentVersion, releaseInfo.Version))
+                {
+                    return releaseInfo;
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error checking for updates: {ex.Message}");
             }
-
             return null;
         }
 
-        public static bool IsNewVersionAvailable(string currentVersion, string latestVersion)
+        private static bool IsNewVersionAvailable(string currentVersion, string latestVersion)
         {
             try
             {
-                var current = Version.Parse(currentVersion);
-                var latest = Version.Parse(latestVersion);
+                var current = System.Version.Parse(currentVersion);
+                var latest = System.Version.Parse(latestVersion);
                 return latest > current;
             }
             catch

@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using AetherClicker.ViewModels;
 using System.Threading.Tasks;
@@ -5,6 +6,8 @@ using System.Windows.Interop;
 using System.Windows.Input;
 using System.Windows.Controls;
 using System.Diagnostics;
+using AetherClicker.Utils;
+using System.Windows.Markup;
 
 namespace AetherClicker.Views
 {
